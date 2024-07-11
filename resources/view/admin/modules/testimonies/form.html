@@ -1,0 +1,23 @@
+<h1>{{title}}</h1>
+
+<hr>
+
+<a href="{{URL}}/admin/testimonies">
+    <button type="button" class="btn btn-warning">Voltar</button>
+</a>
+
+<hr>
+
+{{status}}
+
+<form action="" method="post">
+    <div class="mb-3">
+        <label>Nome</label>
+        <input name="nome" value="{{nome}}" type="text" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label>Mensagem</label>
+        <textarea class="form-control" name="mensagem" name="mensagem" rows="5" required>{{mensagem}}</textarea>
+    </div>
+    <button name="enviar" type="submit" class="btn btn-success">Enviar</button>
+</form>
