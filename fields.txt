@@ -1,0 +1,4 @@
+int id
+string nome
+string cor
+float kilometragem

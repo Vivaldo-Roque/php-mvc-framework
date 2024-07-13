@@ -3,7 +3,6 @@
 namespace App\Model\Entity;
 
 use App\Utils\Db_Mngr\Database;
-use App\Utils\Debug;
 use \PDO;
 
 class User
