@@ -1,0 +1,15 @@
+car {
+    table carro
+    int id
+    string nome
+    string cor
+    float kilometragem
+}
+
+weapon {
+    table arma
+    int id
+    string nome
+    string cor
+    string totalBalas
+}

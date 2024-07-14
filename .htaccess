@@ -7,3 +7,18 @@ RewriteCond %{REQUEST_FILENAME} !-f
 
 # Redireciona tudo para index.php
 RewriteRule ^(.*)$ ./index.php [QSA,NC]
+
+# Página de erro 404 (Não Encontrado)
+ErrorDocument 404 /resources/view/pages/default_error/404.html
+
+# Página de erro 403 (Proibido)
+ErrorDocument 403 /resources/view/pages/default_error/403.html
+
+# Página de erro 500 (Erro Interno do Servidor)
+ErrorDocument 500 /resources/view/pages/default_error/500.html
+
+# Página de erro 401 (Não Autorizado)
+# ErrorDocument 401 /caminho/para/sua/pagina-401.html
+
+# Página de erro 400 (Solicitação Incorreta)
+# ErrorDocument 400 /caminho/para/sua/pagina-400.html

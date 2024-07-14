@@ -1,19 +1,14 @@
 <?php
 
-function generateClassFromFields($className, $inputFile, $outputFile, $tableName)
+function generateClass($className, $tableName, $fields, $outputFile)
 {
-    // Mudar a primeira letra para maiúscula
-    $className = ucfirst($className);
-
-    // Ler os campos do arquivo de entrada
-    $fields = file($inputFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 
     // Inicializa o código da classe
     $classCode = "<?php\n\n";
     $classCode .= "namespace App\Model\Entity;\n\n";
     $classCode .= "use App\Utils\Db_Mngr\Database;\n";
     $classCode .= "use PDO;\n\n";
-    $classCode .= "class " . $className . "\n{\n\n";
+    $classCode .= "class " . ucfirst($className) . "\n{\n\n";
 
     // Adiciona o atributo de nome da tabela
     $classCode .= "    /**\n";
@@ -24,18 +19,15 @@ function generateClassFromFields($className, $inputFile, $outputFile, $tableName
     $classCode .= "    private static string \$tableName = '{$tableName}';\n\n";
 
     // Adiciona os atributos privados
-    foreach ($fields as $field) {
-        list($type, $name) = explode(' ', $field);
+    foreach ($fields as [$type, $name]) {
         $classCode .= "    /**\n";
-        $classCode .= "     * \n";
         $classCode .= "     * @var {$type}\n";
         $classCode .= "     */\n";
         $classCode .= "    private {$type} \${$name};\n\n";
     }
 
     // Adiciona os getters e setters
-    foreach ($fields as $field) {
-        list($type, $name) = explode(' ', $field);
+    foreach ($fields as [$type, $name]) {
         $capitalizedField = ucfirst($name);
 
         if ($type == 'int' || $type == 'float') {
@@ -66,15 +58,13 @@ function generateClassFromFields($className, $inputFile, $outputFile, $tableName
     // Adiciona o construtor
     $classCode .= "    public function __construct(";
     $constructorParams = [];
-    foreach ($fields as $field) {
-        list($type, $name) = explode(' ', $field);
+    foreach ($fields as [$type, $name]) {
         $constructorParams[] = "{$type} \${$name} = null";
     }
     $classCode .= implode(', ', $constructorParams);
     $classCode .= ")\n";
     $classCode .= "    {\n";
-    foreach ($fields as $field) {
-        list($type, $name) = explode(' ', $field);
+    foreach ($fields as [$type, $name]) {
         $classCode .= "        \$this->set" . ucfirst($name) . "(\${$name});\n";
     }
     $classCode .= "    }\n\n";
@@ -83,8 +73,7 @@ function generateClassFromFields($className, $inputFile, $outputFile, $tableName
     $classCode .= "    public function __set(\$name, \$value)\n";
     $classCode .= "    {\n";
     $classCode .= "        switch (\$name) {\n";
-    foreach ($fields as $field) {
-        list($type, $name) = explode(' ', $field);
+    foreach ($fields as [$type, $name]) {
         $capitalizedField = ucfirst($name);
         $classCode .= "            case '{$name}':\n";
         $classCode .= "                return \$this->set{$capitalizedField}(\$value);\n";
@@ -95,8 +84,7 @@ function generateClassFromFields($className, $inputFile, $outputFile, $tableName
     $classCode .= "    public function __get(\$name)\n";
     $classCode .= "    {\n";
     $classCode .= "        switch (\$name) {\n";
-    foreach ($fields as $field) {
-        list($type, $name) = explode(' ', $field);
+    foreach ($fields as [$type, $name]) {
         $capitalizedField = ucfirst($name);
         $classCode .= "            case '{$name}':\n";
         $classCode .= "                return \$this->get{$capitalizedField}();\n";
@@ -107,15 +95,13 @@ function generateClassFromFields($className, $inputFile, $outputFile, $tableName
     // Adiciona o método setAttrs
     $classCode .= "    public function setAttrs(";
     $setAttrsParams = [];
-    foreach ($fields as $field) {
-        list($type, $name) = explode(' ', $field);
+    foreach ($fields as [$type, $name]) {
         $setAttrsParams[] = "{$type} \${$name} = null";
     }
     $classCode .= implode(', ', $setAttrsParams);
     $classCode .= ")\n";
     $classCode .= "    {\n";
-    foreach ($fields as $field) {
-        list($type, $name) = explode(' ', $field);
+    foreach ($fields as [$type, $name]) {
         $classCode .= "        \$this->set" . ucfirst($name) . "(\${$name});\n";
     }
     $classCode .= "    }\n\n";
@@ -158,8 +144,7 @@ function generateClassFromFields($className, $inputFile, $outputFile, $tableName
     $classCode .= "    {\n";
     $classCode .= "        \$db = new Database(self::\$tableName);\n";
     $classCode .= "        \$this->id = \$db->insert([\n";
-    foreach ($fields as $field) {
-        list($type, $name) = explode(' ', $field);
+    foreach ($fields as [$type, $name]) {
         $classCode .= "            '{$name}' => \$this->{$name},\n";
     }
     $classCode .= "        ]);\n";
@@ -175,8 +160,7 @@ function generateClassFromFields($className, $inputFile, $outputFile, $tableName
     $classCode .= "    {\n";
     $classCode .= "        \$db = new Database(self::\$tableName);\n";
     $classCode .= "        return \$db->update(\"id = {\$this->id}\", [\n";
-    foreach ($fields as $field) {
-        list($type, $name) = explode(' ', $field);
+    foreach ($fields as [$type, $name]) {
         $classCode .= "            '{$name}' => \$this->{$name},\n";
     }
     $classCode .= "        ]);\n";
@@ -222,18 +206,41 @@ function generateClassFromFields($className, $inputFile, $outputFile, $tableName
     file_put_contents(ucfirst($outputFile), $classCode);
 }
 
-// Processa os argumentos da linha de comando
-$options = getopt("", ["name:", "input:", "output:", "tableName:"]);
+function generateClassFromSchema()
+{
 
-if (!isset($options['name']) || !isset($options['input']) || !isset($options['output']) || !isset($options['tableName'])) {
-    die("Usage: php generate_class.php --name=<className> --input=<inputFile> --output=<outputFile> --tableName=<tableName>\n");
+    $schemaFile = 'app/model/schema.model';
+    $outputDir = 'app/model/entity';
+
+    // Ler o arquivo de schema
+    $schemaContent = file_get_contents($schemaFile);
+    if (!$schemaContent) {
+        die("Erro ao ler o arquivo de schema.\n");
+    }
+
+    // Dividir o conteúdo do schema em blocos de classes
+    preg_match_all('/(\w+)\s*\{\s*([^}]*)\s*\}/', $schemaContent, $matches, PREG_SET_ORDER);
+
+    foreach ($matches as $match) {
+        $className = $match[1];
+        $classContent = $match[2];
+
+        // Extrair a definição da tabela e os campos
+        preg_match('/table\s+(\w+)/', $classContent, $tableMatch);
+        $tableName = $tableMatch[1];
+        preg_match_all('/(int|string|float)\s+(\w+)/', $classContent, $fieldsMatch, PREG_SET_ORDER);
+
+        $fields = [];
+        foreach ($fieldsMatch as $fieldMatch) {
+            $fields[] = [$fieldMatch[1], $fieldMatch[2]];
+        }
+
+        // Gerar a classe
+        generateClass($className, $tableName, $fields, "$outputDir/" . ucfirst($className) . ".php");
+    }
+
+    echo "Todas as entidades foram geradas com sucesso em 'App/model/entity' apartir de schema.model\n";
 }
 
-$className = $options['name'];
-$inputFile = $options['input'];
-$outputFile = $options['output'];
-$tableName = $options['tableName'];
-
-generateClassFromFields($className, $inputFile, $outputFile, $tableName);
-
-echo "Classe gerada com sucesso em {$outputFile}\n";
+//Rodar a funcao
+generateClassFromSchema();

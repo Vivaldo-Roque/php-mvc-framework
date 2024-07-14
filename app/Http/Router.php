@@ -7,6 +7,7 @@ use \Exception;
 use \ReflectionFunction;
 use \App\Http\Middleware\Queue as MiddlewareQueue;
 use App\Utils\Debug;
+use App\Utils\View;
 
 class Router
 {
@@ -284,11 +285,11 @@ class Router
             }
 
             // metodo nao definido/permitido
-            throw new Exception("Metodo nao e permitido", 405);
+            throw new Exception(View::render("pages/default_error/405"), 405);
          }
       }
-      // Url nao encontrada
-      throw new Exception("Url nao encontrada", 404);
+      // Renderiza a pagina 404 e retorna uma exception com o codigo
+      throw new Exception(View::render("pages/default_error/404"), 404);
    }
 
    public function run()
@@ -300,7 +301,8 @@ class Router
 
          // Verificar o controlador
          if (!isset($route['controller'])) {
-            throw new Exception("A url nao pode ser processada", 500);
+            // Renderiza a pagina 404 e retorna uma exception com o codigo
+            throw new Exception(View::render("pages/default_error/500"), 500);
          }
 
          // argumentos da funcao
