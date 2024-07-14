@@ -285,11 +285,11 @@ class Router
             }
 
             // metodo nao definido/permitido
-            throw new Exception(View::render("pages/default_error/405"), 405);
+            throw new HttpExceptionError(405);
          }
       }
       // Renderiza a pagina 404 e retorna uma exception com o codigo
-      throw new Exception(View::render("pages/default_error/404"), 404);
+      throw new HttpExceptionError(404);
    }
 
    public function run()
@@ -302,7 +302,7 @@ class Router
          // Verificar o controlador
          if (!isset($route['controller'])) {
             // Renderiza a pagina 404 e retorna uma exception com o codigo
-            throw new Exception(View::render("pages/default_error/500"), 500);
+            throw new HttpExceptionError(500);
          }
 
          // argumentos da funcao
