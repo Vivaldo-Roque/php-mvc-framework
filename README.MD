@@ -1,8 +1,10 @@
+créditos: https://www.youtube.com/playlist?list=PL_zkXQGHYosGQwNkMMdhRZgm4GjspTnXs
 comandos:
 
 Inicializar: composer install
 Atualizar cache: composer dump-autoload
 composer require firebase/php-jwt
+composer require "twig/twig:^3.0"
 
 MVC conceito e arquitetura de pastas
 

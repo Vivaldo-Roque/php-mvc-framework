@@ -2,8 +2,6 @@
 
 namespace App\Controller\Admin;
 
-use App\Utils\View;
-
 class Home extends Page
 {
 
@@ -18,11 +16,8 @@ class Home extends Page
 
     public static function getHome($request)
     {
-        // Conteudo da home
-        $content = view::render('admin/modules/home/index',[]);
-
         // Retorna a pagina completa
-        return parent::getPanel('Home', $content, 'home');
+        return parent::getPanel(title: 'Home', view: 'admin/modules/home/index.html', vars: [], currentModule: 'home');
     }
 
     

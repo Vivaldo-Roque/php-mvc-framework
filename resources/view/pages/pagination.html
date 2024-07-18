@@ -1,0 +1,9 @@
+<nav>
+    <ul class="pagination">
+        {% for pagination in paginations %}
+            <li class="page-item {{ pagination.active }}">
+                <a class="page-link" href="{{ pagination.link }}">{{ pagination.page }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+</nav>

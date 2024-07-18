@@ -2,7 +2,6 @@
 
 namespace App\Controller\Admin;
 
-use App\Utils\View;
 use App\Model\Entity\User;
 use App\Session\Admin\Login as SessionAdminLogin;
 use App\Controller\Admin\Alert;
@@ -24,13 +23,10 @@ class Login extends Page
         // status
         $status = !is_null($errorMessage) ? Alert::getError($errorMessage) : '';
 
-        // conteudo da pagina login
-        $content = View::render('admin/login', [
-            'status' => $status
-        ]);
-
         // retorna a pagina completa
-        return parent::getPage('Login > WDEV', $content);
+        return parent::getPage(title: 'Login > MVC', view: 'admin/login.html', vars: [
+            'status' => $status
+         ]);
     }
 
     /**

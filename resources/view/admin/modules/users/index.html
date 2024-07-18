@@ -1,3 +1,6 @@
+{% extends "admin/panel.html" %}
+
+{% block panelContent %}
 <h1>Usuarios</h1>
 
 <p>Usuarios com acesso ao painel</p>
@@ -10,7 +13,7 @@
 
 <hr>
 
-{{status}}
+{% include "admin/alert/status.html" %}
 
 <table class="table table-light table-striped">
     <thead>
@@ -21,9 +24,28 @@
             <th style="width: 200px;">Accoes</th>
         </tr>
     </thead>
+
     <body>
-        {{itens}}
+        {% for user in users %}
+            <tr>
+                <td>{{user.id}}</td>
+                <td>{{user.nome}}</td>
+                <td>{{user.email}}</td>
+                <td>
+                    <a href="{{URL}}/admin/users/{{user.id}}/edit">
+                        <button type="button" class="btn btn-primary">Editar</button>
+                    </a>
+                    <a href="{{URL}}/admin/users/{{user.id}}/delete">
+                        <button type="button" class="btn btn-danger">Excluir</button>
+                    </a>
+                </td>
+            </tr>
+        {% else %}
+            <p>Sem usuarios</p>
+        {% endfor %}
     </body>
 </table>
 
-{{pagination}}
+{% include 'admin/pagination.html' with {'paginations': paginations} only %}
+
+{% endblock %}

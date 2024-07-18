@@ -5,27 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{{title}}</title>
 
-    {{styles}}
+    {% include 'admin/styles.html' %}
 
   </head>
 
-  <body class="min-vh-100 d-flex flex-column justify-content-between bg-dark text-light">
+  <body class="bg-dark text-light min-vh-100 d-flex flex-column justify-content-between">
     
     <div> <!-- Wrapper (Without footer) -->
 
-      {{header}}
-
-      <main class="m-3">
-        {{content}}
+      <main class="m-2">
+        {% block content %}{% endblock %}
       </main>
 
   </div> <!-- End: Wrapper (Without footer) -->
 
 
- {{footer}}
+  {% include 'admin/footer.html' %}
 
   </body>
 
-  {{scripts}}
+  {% include 'admin/scripts.html' %}
 
 </html>

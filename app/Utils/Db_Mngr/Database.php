@@ -86,7 +86,7 @@ class Database
    */
   private function defaultErrorPage()
   {
-    die(View::render("pages/default_error/db"));
+    die(View::render("pages/default_error/db.html"));
   }
 
   /**

@@ -25,7 +25,7 @@ class Testimony extends Page
     {
 
         // notas
-        $itens = '';
+        $itens = [];
 
         // quantidade total de registos
         $quantidadeTotal = EntityTestimony::countAll();
@@ -35,7 +35,7 @@ class Testimony extends Page
         $paginaAtual = $queryParams['page'] ?? 1;
 
         // Total de itens por pagina
-        $itensPerPages = 5;
+        $itensPerPages = 2;
 
         // instancia de paginacao
         $obPagination = new Pagination($quantidadeTotal, $paginaAtual, $itensPerPages);
@@ -45,12 +45,7 @@ class Testimony extends Page
 
         foreach ($results as $obTestimony) {
 
-            $itens .= View::render('admin/modules/testimonies/widgets/itens', [
-                'id' => $obTestimony->id,
-                'nome' => $obTestimony->nome,
-                'mensagem' => $obTestimony->mensagem,
-                'data' => date('d/m/Y H:i:s', strtotime($obTestimony->data))
-            ]);
+            $itens[] = $obTestimony->toArray();
         }
 
         return $itens;
@@ -67,15 +62,12 @@ class Testimony extends Page
 
     public static function getTestimonies($request)
     {
-        // Conteudo da home
-        $content = View::render('admin/modules/testimonies/index', [
-            'itens' => self::getTestemonyItems($request, $obPagination),
-            'pagination' => parent::getPagination($request, $obPagination),
-            'status' => self::getStatus($request)
-        ]);
-
         // Retorna a pagina completa
-        return parent::getPanel('Depoimentos', $content, 'testimonies');
+        return parent::getPanel(title: 'Depoimentos', view: 'admin/modules/testimonies/index.html', vars: [
+            'testimonies' => self::getTestemonyItems($request, $obPagination),
+            'paginations' => parent::getPagination($request, $obPagination),
+            'status' => self::getStatus($request)
+        ], currentModule: 'testimonies');
     }
 
     /**
@@ -88,13 +80,8 @@ class Testimony extends Page
 
     public static function getNewTestimony($request)
     {
-        // Conteudo do formulario
-        $content = View::render('admin/modules/testimonies/form', [
-            'title' => 'Cadastrar depoimento',
-        ]);
-
         // Retorna a pagina completa
-        return parent::getPanel('Cadastrar depoimento', $content, 'testimonies');
+        return parent::getPanel(title: 'Cadastrar depoimento', view: 'admin/modules/testimonies/form.html', vars: [], currentModule: 'testimonies');
     }
 
     /**
@@ -143,16 +130,12 @@ class Testimony extends Page
             $request->getRouter()->redirect('/admin/testimonies');
         }
 
-        // Conteudo do formulario
-        $content = View::render('admin/modules/testimonies/form', [
-            'title' => 'Editar depoimento',
+        // Retorna a pagina completa
+        return parent::getPanel(title: 'Editar depoimento', view: 'admin/modules/testimonies/form.html', vars: [
             'nome' => $obTestimony->nome,
             'mensagem' => $obTestimony->mensagem,
             'status' => self::getStatus($request)
-        ]);
-
-        // Retorna a pagina completa
-        return parent::getPanel('Editar depoimento', $content, 'testimonies');
+        ], currentModule: 'testimonies');
     }
 
 
@@ -239,14 +222,11 @@ class Testimony extends Page
              $request->getRouter()->redirect('/admin/testimonies');
          }
  
-         // Conteudo do formulario
-         $content = View::render('admin/modules/testimonies/delete', [
-             'nome' => $obTestimony->nome,
-             'mensagem' => $obTestimony->mensagem,
-         ]);
- 
          // Retorna a pagina completa
-         return parent::getPanel('Excluir depoimento', $content, 'testimonies');
+         return parent::getPanel(title: 'Excluir depoimento', view: 'admin/modules/testimonies/delete.html', vars: [
+            'nome' => $obTestimony->nome,
+             'mensagem' => $obTestimony->mensagem,
+         ], currentModule: 'testimonies');
      }
 
      /**

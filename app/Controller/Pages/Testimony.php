@@ -3,8 +3,8 @@
 namespace App\Controller\Pages;
 
 use App\Model\Entity\Testimony as EntityTestimony;
-use \App\Utils\View;
 use \App\Utils\Db_Mngr\Pagination;
+use App\Utils\Debug;
 
 class Testimony extends Page
 {
@@ -15,14 +15,14 @@ class Testimony extends Page
     *
     * @param Request $request
     * @param Pagination $obPagination
-    * @return string 
+    * @return array 
     * 
     */
 
-   private static function getTestemonyItems($request, &$obPagination){
-      
-      // notas
-      $itens = '';
+   private static function getTestemonyItems($request, &$obPagination)
+   {
+
+      $itens = [];
 
       // quantidade total de registos
       $quantidadeTotal = EntityTestimony::countAll();
@@ -40,13 +40,9 @@ class Testimony extends Page
       // resultado da consulta
       $results = EntityTestimony::getTestimonies(limit: $obPagination->getLimit());
 
-      foreach($results as $obTestimony){
+      foreach ($results as $obTestimony) {
 
-         $itens .= View::render('pages/testimony/table_item', [
-            'nome' => $obTestimony->nome,
-            'mensagem' => $obTestimony->mensagem,
-            'data' => date('d/m/Y H:i:s', strtotime($obTestimony->data))
-         ]);
+         $itens [] = $obTestimony->toArray();
       }
 
       return $itens;
@@ -64,14 +60,11 @@ class Testimony extends Page
    public static function getTestimonies($request)
    {
 
-      // View de depoimento
-      $content = View::render('pages/testimonies', [
-         'itens' => self::getTestemonyItems($request, $obPagination),
-         'pagination' => parent::getPagination($request, $obPagination)
-      ]);
-
       // Retorna a view da pagina
-      return parent::getPage('Depoimentos', $content);
+      return parent::getPage(title: 'Testimonies', view: 'pages/testimonies.html', vars: [
+         'testimonies' => self::getTestemonyItems($request, $obPagination),
+         'paginations' => parent::getPagination($request, $obPagination)
+      ]);
    }
 
    public static function insertTestimony($request)
@@ -90,5 +83,4 @@ class Testimony extends Page
 
       return self::getTestimonies($request);
    }
-
 }

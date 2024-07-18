@@ -98,7 +98,7 @@ class Testimony
 
     private function getData()
     {
-        return $this->data;
+        return date('d/m/Y H:i:s', strtotime($this->data));
     }
 
     /**
@@ -150,6 +150,21 @@ class Testimony
         $this->setNome($nome);
         $this->setMensagem($mensagem);
         $this->setData($data);
+    }
+
+    /**
+     * 
+     * Metodo responsavel por retornar um array da classe
+     * @return array
+     */
+    public function toArray()
+    {
+        return [
+            'id' => $this->getId(),
+            'nome' => $this->getNome(),
+            'mensagem' => $this->getMensagem(),
+            'data' => $this->getData()
+        ];
     }
 
     /**
@@ -223,7 +238,7 @@ class Testimony
 
         $db = new Database(self::$tableName);
 
-        $result = (int)$db->select(fields: 'COUNT(*) as qtd')->fetchObject(self::class)->qtd;
+        $result = (int)$db->select(fields: 'COUNT(*) as qtd')->fetchObject()->qtd;
 
         return $result;
     }

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{{title}}</title>
 
-    {{styles}}
+    {% include 'pages/styles.html' %}
 
   </head>
 
@@ -13,19 +13,19 @@
     
     <div> <!-- Wrapper (Without footer) -->
 
-      {{header}}
+      {% include 'pages/header.html' %}
 
       <main class="m-2">
-        {{content}}
+        {% block content %}{% endblock %}
       </main>
 
   </div> <!-- End: Wrapper (Without footer) -->
 
 
- {{footer}}
+  {% include 'pages/footer.html' %}
 
   </body>
 
-  {{scripts}}
+  {% include 'pages/scripts.html' %}
 
 </html>

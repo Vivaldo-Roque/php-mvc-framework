@@ -8,17 +8,31 @@ RewriteCond %{REQUEST_FILENAME} !-f
 # Redireciona tudo para index.php
 RewriteRule ^(.*)$ ./index.php [QSA,NC]
 
+# Bloquear acesso a vendor
+RewriteRule ^vendor/ - [F,L]
+
+# Bloquear acesso a todos os arquivos especificos
+# <FilesMatch "\.(php|htaccess|env|gitignore|json|lock|text|MD)$">
+#    Require all denied
+# </FilesMatch>
+
+# Permitir acesso ao index.php
+<Files "index.php">
+    Require all granted
+</Files>
+
+#### Paginas de erro
 # Página de erro 404 (Não Encontrado)
-ErrorDocument 404 /resources/view/pages/default_error/404.html
+ErrorDocument 404 /mvc/resources/view/pages/default_error/404.html
 
 # Página de erro 403 (Proibido)
-ErrorDocument 403 /resources/view/pages/default_error/403.html
+ErrorDocument 403 /mvc/resources/view/pages/default_error/403.html
 
 # Página de erro 500 (Erro Interno do Servidor)
-ErrorDocument 500 /resources/view/pages/default_error/500.html
+ErrorDocument 500 /mvc/resources/view/pages/default_error/500.html
 
 # Página de erro 401 (Não Autorizado)
-# ErrorDocument 401 /caminho/para/sua/pagina-401.html
+# ErrorDocument 401 /mvc/caminho/para/sua/pagina-401.html
 
 # Página de erro 400 (Solicitação Incorreta)
-# ErrorDocument 400 /caminho/para/sua/pagina-400.html
+# ErrorDocument 400 /mvc/caminho/para/sua/pagina-400.html

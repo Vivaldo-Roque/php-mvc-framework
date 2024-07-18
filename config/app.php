@@ -1,6 +1,6 @@
 <?php
 
-require __DIR__.'/../vendor/autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
 
 use \App\Utils\View;
 use \App\Utils\Environment as Env;
@@ -8,7 +8,7 @@ use \App\Utils\Db_Mngr\Database;
 use \App\Http\Middleware\Queue as MidddlewareQueue;
 
 //Carrega variaveis de ambiente
-Env::load(__DIR__.'/../');
+Env::load(__DIR__ . '/../');
 
 define('URL', getenv('URL'));
 
@@ -22,9 +22,13 @@ Database::config(
 );
 
 // Define o valor padrao das variaveis
-View::init([
-    'URL' => URL,
-]);
+
+View::init(
+    template_dir: realpath(__DIR__ . '/../') . '\resources\view',
+    vars: [
+        'URL' => URL,
+    ]
+);
 
 // Define o mapeamento de middlewares
 MidddlewareQueue::setMap(

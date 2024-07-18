@@ -2,7 +2,6 @@
 
 namespace App\Controller\Pages;
 
-use App\Model\Entity\Aluno;
 use \App\Utils\View;
 
 class About extends Page {
@@ -18,11 +17,8 @@ class About extends Page {
 
      public static function getAbout ($request){
 
-        // View da about
-        $content = View::render('pages/about', []);
-
         // Retorna a view da pagina
-        return parent::getPage('About', $content);
+        return parent::getPage(title: 'About', view: 'pages/about.html', vars: []);
      }
 
 }

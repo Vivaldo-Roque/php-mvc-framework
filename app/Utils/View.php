@@ -6,12 +6,30 @@ class View {
 
     /**
      * 
-     * Método responsável por retornar o conteúdo de uma view
+     * Variavel responsável por guardar o local dos templates
+     * 
+     * @var string $template_dir
+     */
+
+     private static $template_dir;
+
+    /**
+     * 
+     * Variavel responsável por guardar o conteúdo de uma view
      * 
      * @var array $vars
      */
 
      private static $vars = [];
+
+     /**
+     * 
+     * Variavel responsável por guardar a instancia de twig
+     * 
+     * @var \Twig\Environment $twig
+     */
+
+     private static $twig;
 
     /**
      * 
@@ -20,7 +38,8 @@ class View {
      * @param array $vars
      */
 
-    public static function init($vars = []) {
+    public static function init($template_dir, $vars = []) {
+        self::$template_dir = $template_dir;
         self::$vars = $vars;
     }
 
@@ -29,27 +48,14 @@ class View {
      * Método responsável por retornar o conteúdo de uma view
      * 
      * @param string $view
-     * @return string
+     * @return TemplateWrapper
      */
 
      public static function getContentView($view){
-        $file = __DIR__.'/../../resources/view/'.$view.'.html';
-        return file_exists($file) ? file_get_contents($file) : '';
+        $loader = new \Twig\Loader\FilesystemLoader(self::$template_dir);
+        self::$twig = new \Twig\Environment($loader);
+        return self::$twig->load($view);
      }
-
-
-    /**
-     * 
-     * Método responsável por retornar o conteúdo renderizado de uma view
-     * 
-     * @param string $view
-     * @param array $vars (string/numeric)
-     * @return string
-     */
-
-    private static function removeEmptyVars($string) {
-        return preg_replace('/{{[^}]+}}/', '', $string);
-    }
 
     public static function render($view, $vars = []){
         
@@ -59,18 +65,7 @@ class View {
         // Unir as variaveis da classe com dos controladores
         $vars = array_merge(self::$vars, $vars);
 
-        // Chaves do array de variaveis
-        $keys = array_keys($vars);
-        $keys = array_map(function($item){
-            return '{{'.$item.'}}';
-        }, $keys);
-
-        
-        // renderiza o conteudo
-        $content = str_replace($keys, array_values($vars), $contentView);
-        
-        // Remove variaveis não definidas no HTML
-        $content = self::removeEmptyVars($content);
+        $content = $contentView->render($vars);
 
         // Retorna conteúdo renderizado
         return $content;

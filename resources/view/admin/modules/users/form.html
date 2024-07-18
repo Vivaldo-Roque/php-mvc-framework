@@ -1,27 +1,32 @@
-<h1>{{title}}</h1>
+{% extends "admin/panel.html" %}
 
-<hr>
+{% block panelContent %}
+    <h1>{{title}}</h1>
 
-<a href="{{URL}}/admin/users">
-    <button type="button" class="btn btn-warning">Voltar</button>
-</a>
+    <hr>
 
-<hr>
+    <a href="{{URL}}/admin/users">
+        <button type="button" class="btn btn-warning">Voltar</button>
+    </a>
 
-{{status}}
+    <hr>
 
-<form action="" method="post">
-    <div class="mb-3">
-        <label>Nome</label>
-        <input name="nome" value="{{nome}}" type="text" class="form-control" required>
-    </div>
-    <div class="mb-3">
-        <label>Email</label>
-        <input name="email" value="{{email}}" type="email" class="form-control" required>
-    </div>
-    <div class="mb-3">
-        <label>Senha</label>
-        <input name="senha" type="password" class="form-control" {{required}}>
-    </div>
-    <button name="enviar" type="submit" class="btn btn-success">Enviar</button>
-</form>
+    {% include "admin/alert/status.html" %}
+
+    <form action="" method="post">
+        <div class="mb-3">
+            <label>Nome</label>
+            <input name="nome" value="{{nome}}" type="text" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label>Email</label>
+            <input name="email" value="{{email}}" type="email" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label>Senha</label>
+            <input name="senha" type="password" class="form-control" {{required}}>
+        </div>
+        <button name="enviar" type="submit" class="btn btn-success">Enviar</button>
+    </form>
+{% endblock %}
+

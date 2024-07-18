@@ -6,6 +6,7 @@
         }
     },
     "require": {
-        "firebase/php-jwt": "^6.10"
+        "firebase/php-jwt": "^6.10",
+        "twig/twig": "^3.0"
     }
 }

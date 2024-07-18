@@ -25,7 +25,7 @@ class User extends Page
     {
 
         // notas
-        $itens = '';
+        $itens = [];
 
         // quantidade total de registos
         $quantidadeTotal = EntityUser::countAll();
@@ -45,11 +45,7 @@ class User extends Page
 
         foreach ($results as $obUser) {
 
-            $itens .= View::render('admin/modules/users/widgets/itens', [
-                'id' => $obUser->id,
-                'nome' => $obUser->nome,
-                'email' => $obUser->email
-            ]);
+            $itens [] = $obUser->toArray();
         }
 
         return $itens;
@@ -66,15 +62,12 @@ class User extends Page
 
     public static function getUsers($request)
     {
-        // Conteudo da home
-        $content = View::render('admin/modules/users/index', [
-            'itens' => self::getUserItems($request, $obPagination),
-            'pagination' => parent::getPagination($request, $obPagination),
-            'status' => self::getStatus($request)
-        ]);
-
         // Retorna a pagina completa
-        return parent::getPanel('Usuarios', $content, 'users');
+        return parent::getPanel(title: 'Usuarios', view: 'admin/modules/users/index.html', vars: [
+            'users' => self::getUserItems($request, $obPagination),
+            'paginations' => parent::getPagination($request, $obPagination),
+            'status' => self::getStatus($request)
+        ], currentModule: 'users');
     }
 
     /**
@@ -87,15 +80,11 @@ class User extends Page
 
     public static function getNewUser($request)
     {
-        // Conteudo do formulario
-        $content = View::render('admin/modules/users/form', [
-            'title' => 'Cadastrar Usuario',
+        // Retorna a pagina completa
+        return parent::getPanel(title: 'Cadastrar usuario', view: 'admin/modules/users/form.html', vars: [
             'status' => self::getStatus($request),
             'required' => 'required'
-        ]);
-
-        // Retorna a pagina completa
-        return parent::getPanel('Cadastrar usuario', $content, 'users');
+        ], currentModule: 'users');
     }
 
     /**
@@ -151,16 +140,12 @@ class User extends Page
             $request->getRouter()->redirect('/admin/users');
         }
 
-        // Conteudo do formulario
-        $content = View::render('admin/modules/users/form', [
-            'title' => 'Editar usuario',
+        // Retorna a pagina completa
+        return parent::getPanel(title: 'Editar usuario', view: 'admin/modules/users/form.html', vars: [
             'nome' => $obUser->nome,
             'email' => $obUser->email,
             'status' => self::getStatus($request)
-        ]);
-
-        // Retorna a pagina completa
-        return parent::getPanel('Editar usuario', $content, 'users');
+        ], currentModule: 'users');
     }
 
 
@@ -258,14 +243,11 @@ class User extends Page
             $request->getRouter()->redirect('/admin/users');
         }
 
-        // Conteudo do formulario
-        $content = View::render('admin/modules/users/delete', [
+        // Retorna a pagina completa
+        return parent::getPanel(title: 'Excluir Usuario', view: 'admin/modules/users/delete.html', vars: [
             'nome' => $obUser->nome,
             'email' => $obUser->email,
-        ]);
-
-        // Retorna a pagina completa
-        return parent::getPanel('Excluir Usuario', $content, 'users');
+        ], currentModule: 'users');
     }
 
     /**

@@ -10,7 +10,7 @@ class HttpExceptionError extends Exception {
 
     // Redefine the exception so message isn't optional
     public function __construct($code = 0, Throwable $previous = null) {
-        $this->message = View::render("pages/default_error/{$code}");
+        $this->message = View::render("pages/default_error/{$code}.html");
 
         // make sure everything is assigned properly
         parent::__construct($this->message, $code, $previous);

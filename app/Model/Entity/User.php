@@ -144,6 +144,21 @@ class User
 
     /**
      * 
+     * Metodo responsavel por retornar um array da classe
+     * @return array
+     */
+    public function toArray()
+    {
+        return [
+            'id' => $this->getId(),
+            'nome' => $this->getNome(),
+            'email' => $this->getEmail(),
+            'senha' => $this->getSenha()
+        ];
+    }
+
+    /**
+     * 
      * Metodo responsavel por definir os atributos da classe
      * @param integer $id
      * @param string $nome
@@ -250,7 +265,7 @@ class User
 
         $db = new Database(self::$tableName);
 
-        $result = (int)$db->select(fields: 'COUNT(*) as qtd')->fetchObject(self::class)->qtd;
+        $result = (int)$db->select(fields: 'COUNT(*) as qtd')->fetchObject()->qtd;
 
         return $result;
     }

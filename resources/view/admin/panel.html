@@ -1,9 +1,14 @@
-<section id="menu">
-    {{menu}}
-</section>
+{% extends "admin/page.html" %}
 
-<section id="modulo">
-    <div class="container pt-3">
-        {{content}}
-    </div>
-</section>
+{% block content %}
+    <section id="menu">
+        {% include "admin/menu.html" %}
+    </section>
+
+    <section id="modulo">
+        <div class="container pt-3">
+            {% block panelContent %}
+            {% endblock %}
+        </div>
+    </section>
+{% endblock %}

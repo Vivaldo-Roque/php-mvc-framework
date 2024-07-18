@@ -2,6 +2,7 @@
 
 namespace App\Controller\Admin;
 
+use App\Utils\Debug;
 use \App\Utils\View;
 
 class Page
@@ -16,48 +17,35 @@ class Page
    private static $modules = [
       'home' => [
          'label' => 'Home',
-         'link' => URL.'/admin'
+         'link' => URL . '/admin'
       ],
       'testimonies' => [
          'label' => 'Depoimentos',
-         'link' => URL.'/admin/testimonies'
+         'link' => URL . '/admin/testimonies'
       ],
       'users' => [
          'label' => 'Usuarios',
-         'link' => URL.'/admin/users'
+         'link' => URL . '/admin/users'
       ]
    ];
 
 
    /**
     * 
-    * Método responsável por injectar html
-    * @return string
-    * 
-    */
-   private static function getHtmlFile($htmlFileName)
-   {
-      return View::render('admin/' . $htmlFileName);
-   }
-
-
-   /**
-    * 
     * Método responsável por retornar o conteúdo {view} da nossa home
-    *
     * @param string $title
-    * @param string $content
+    * @param string $view
+    * @param array $vars
     * @return string
     * 
     */
-   public static function getPage($title, $content)
+
+   public static function getPage($title, $view, $vars = [])
    {
-      return View::render('admin/page', [
-         'title' => $title,
-         'content' => $content,
-         'scripts' => self::getHtmlFile('scripts'),
-         'styles' => self::getHtmlFile('styles'),
-      ]);
+      $vars['title'] = $title;
+      $vars['URL'] = URL;
+
+      return View::render($view, $vars);
    }
 
    /**
@@ -72,21 +60,19 @@ class Page
    {
 
       // Links fo menu
-      $links = '';
+      $links = [];
 
       // itera os modulos
-      foreach(self::$modules as $hash=>$module){
-         $links .= View::render('admin/menu/link', [
+      foreach (self::$modules as $hash => $module) {
+         $links[] = [
             'label' => $module['label'],
             'link' => $module['link'],
             'current' => $hash == $currentModule ? 'text-danger' : ''
-         ]);
+         ];
       }
 
       // Retorna a renderizacao do menu
-      return View::render('admin/menu/box', [
-         'links' => $links
-      ]);
+      return $links;
    }
 
    /**
@@ -99,17 +85,39 @@ class Page
     * @return string
     * 
     */
-   public static function getPanel($title, $content, $currentModule)
+   public static function getPanel($title, $view, $vars = [], $currentModule)
    {
 
-      // Renderiza a view do painel
-      $contentPanel = View::render('admin/panel', [
-         'menu' => self::getMenu($currentModule),
-         'content' => $content
-      ]);
+      $vars['menus'] = self::getMenu($currentModule);
 
       // Retorna a pagina renderizada
-      return self::getPage($title, $contentPanel);
+      return self::getPage(title: $title, view: $view, vars: $vars);
+   }
+
+   /**
+    * Metodo responsavel por retornar um link da paginacao
+    * @param array $queryParams
+    * @param array $page
+    * @param string $url
+    * @return string
+    */
+   private static function getPaginationLink($queryParams, $page, $url, $label = null)
+   {
+      // Altera a pagina
+      $queryParams['page'] = $page['page'];
+
+      // Gerar o link
+      $link = $url . '?' . http_build_query($queryParams);
+
+      // Verificar se a pagina é mesmo a atual
+      $activePage = $page['current'] ? 'active' : '';
+
+      // Renderizacao da view
+      return [
+         'page' => $label ?? $page['page'],
+         'link' => $link,
+         'active' => $activePage
+      ];
    }
 
    /**
@@ -126,13 +134,15 @@ class Page
       // Paginas
       $pages = $obPagination->getPages();
 
+      // Debug::print($pages);
+
       // Verificar se tem mais de 1 pagina
       if (count($pages) <= 1) {
          return '';
       }
 
       // Links
-      $links = '';
+      $links = [];
 
       // url atual sem gets
       $url = $request->getRouter()->getCurrentUrl();
@@ -140,30 +150,50 @@ class Page
       // Valores de get
       $queryParams = $request->getQueryParams();
 
+      // Pagina atual
+      $currentPage = $queryParams['page'] ?? 1;
+
+      // Limite de paginas
+      $limit = getenv('PAGINATION_LIMIT');
+
+      // Meio da paginacao
+      $middle = ceil($limit / 2);
+
+      // Inicio da paginacao
+      $start = $middle > $currentPage ? 0 : $currentPage - $middle;
+
+      // Ajusta o final da paginacao
+      $limit = $limit + $start;
+
+      // Ajusta o inicio da paginacao
+      if ($limit > count($pages)) {
+         $diff = $limit - count($pages);
+         $start = $start - $diff;
+      }
+
+      // Link inicial
+      if ($start > 0) {
+         $links[] = self::getPaginationLink($queryParams, reset($pages), $url, '<<');
+      }
+
       // Renderiza os links
       foreach ($pages as $page) {
 
-         // Altera a pagina
-         $queryParams['page'] = $page['page'];
+         // Verifica o start da paginacao
+         if ($page['page'] <= $start) {
+            continue;
+         }
 
-         // Gerar o link
-         $link = $url . '?' . http_build_query($queryParams);
+         // Verifica o limite de paginacao
+         if ($page['page'] > $limit) {
+            $links[] = self::getPaginationLink($queryParams, end($pages), $url, '>>');
+            break;
+         }
 
-         // Verificar se a pagina é mesmo a atual
-         $activePage = $page['current'] ? 'active' : '';
-
-         // Renderizacao da view
-         $links .= View::render('admin/pagination/link', [
-            'page' => $page['page'],
-            'link' => $link,
-            'active' => $activePage
-         ]);
+         $links[] = self::getPaginationLink($queryParams, $page, $url);
       }
 
-      // Renderiza box de paginacao
-      return View::render('admin/pagination/box', [
-         'links' => $links
-      ]);
-      
+      // retorna os links
+      return $links;
    }
 }

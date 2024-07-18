@@ -18,12 +18,8 @@ class Home extends Page
 
    public static function getHome($request)
    {
-
-      // View da home
-      $content = View::render('pages/home', []);
-
       // Retorna a view da pagina
-      return parent::getPage('Home', $content);
+      return parent::getPage(title: 'Home', view: 'pages/home.html', vars: []);
    }
 
 }
