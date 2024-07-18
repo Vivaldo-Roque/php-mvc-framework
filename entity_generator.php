@@ -3,12 +3,14 @@
 function generateClass($className, $tableName, $fields, $outputFile)
 {
 
+    $className = ucfirst($className);
+
     // Inicializa o código da classe
     $classCode = "<?php\n\n";
     $classCode .= "namespace App\Model\Entity;\n\n";
     $classCode .= "use App\Utils\Db_Mngr\Database;\n";
     $classCode .= "use PDO;\n\n";
-    $classCode .= "class " . ucfirst($className) . "\n{\n\n";
+    $classCode .= "class " . $className . "\n{\n\n";
 
     // Adiciona o atributo de nome da tabela
     $classCode .= "    /**\n";
@@ -104,6 +106,21 @@ function generateClass($className, $tableName, $fields, $outputFile)
     foreach ($fields as [$type, $name]) {
         $classCode .= "        \$this->set" . ucfirst($name) . "(\${$name});\n";
     }
+    $classCode .= "    }\n\n";
+
+    // Adiciona o método toArray
+    $classCode .= "    /**\n";
+    $classCode .= "     * Método responsável por retornar um array da classe\n";
+    $classCode .= "     * \n";
+    $classCode .= "     * @return array\n";
+    $classCode .= "     */\n";
+    $classCode .= "    public function toArray(): array\n";
+    $classCode .= "    {\n";
+    $classCode .= "        return [\n";
+    foreach ($fields as [$type, $name]) {
+        $classCode .= "            '{$name}' => \$this->get" . ucfirst($name) . "(),\n";
+    }
+    $classCode .= "        ];\n";
     $classCode .= "    }\n\n";
 
     // Adiciona os métodos para interagir com o banco de dados
