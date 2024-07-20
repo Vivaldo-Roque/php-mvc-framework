@@ -201,4 +201,32 @@ class Database
     //RETORNA SUCESSO
     return true;
   }
+
+  /**
+   * Método responsável por executar uniao de consultas
+   * @param array $joins ['type' => 'INNER', 'table' => 'clientes','condition' => 'pedidos.cliente_id = clientes.id']
+   * @param string $where
+   * @param string $order
+   * @param string $limit
+   * @param string $fields
+   * @return boolean
+   */
+  public function selectWithJoin($joins = [], $where = null, $order = null, $limit = null, $fields = '*')
+  {
+    // Dados da query
+    $joinQuery = '';
+    foreach ($joins as $join) {
+      $joinQuery .= ' ' . $join['type'] . ' JOIN ' . $join['table'] . ' ON ' . $join['condition'];
+    }
+
+    $where = strlen($where) ? 'WHERE ' . $where : '';
+    $order = strlen($order) ? 'ORDER BY ' . $order : '';
+    $limit = strlen($limit) ? 'LIMIT ' . $limit : '';
+
+    // Monta a query
+    $query = 'SELECT ' . $fields . ' FROM ' . $this->table . $joinQuery . ' ' . $where . ' ' . $order . ' ' . $limit;
+
+    // Executa a query
+    return $this->execute($query);
+  }
 }
