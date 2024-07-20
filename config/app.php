@@ -6,6 +6,7 @@ use \App\Utils\View;
 use \App\Utils\Environment as Env;
 use \App\Utils\Db_Mngr\Database;
 use \App\Http\Middleware\Queue as MidddlewareQueue;
+use App\Utils\TwigSingleton;
 
 //Carrega variaveis de ambiente
 Env::load(__DIR__ . '/../');
@@ -21,10 +22,11 @@ Database::config(
     getenv('DB_PORT')
 );
 
-// Define o valor padrao das variaveis
+// Inicializa o twig
+TwigSingleton::getInstance()->init(template_dir: realpath(__DIR__ . '/../') . '\resources\view');
 
+// Define o valor padrao das variaveis do template
 View::init(
-    template_dir: realpath(__DIR__ . '/../') . '\resources\view',
     vars: [
         'URL' => URL,
     ]
@@ -39,11 +41,13 @@ MidddlewareQueue::setMap(
         'api' => \App\Http\Middleware\Api::class,
         'user-basic-auth' => \App\Http\Middleware\UserBasicAuth::class,
         'jwt-auth' => \App\Http\Middleware\JWTAuth::class,
-        'cache' => \App\Http\Middleware\Cache::class
+        'cache' => \App\Http\Middleware\Cache::class,
+        'csrf' => \App\Http\Middleware\CSRF::class
     ]
 );
 
 // Define o mapeamento de middlewares padroes em todas as rotas
 MidddlewareQueue::setDefaultMiddlewares([
-    'maintenance'
+    'maintenance',
+    'csrf'
 ],);

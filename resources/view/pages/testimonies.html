@@ -32,6 +32,7 @@
         <h3>Envie seu depoimento</h3>
 
         <form action="?page=1" method="post">
+            {% include 'security/csrf.html' with {'csrf_token': csrf_token} only %}
             <div class="mb-3">
                 <label>Nome</label>
                 <input name="nome" type="text" class="form-control" required>

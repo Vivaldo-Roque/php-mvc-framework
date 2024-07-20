@@ -2,16 +2,9 @@
 
 namespace App\Utils;
 
+use \App\Session\Security\CSRF as SessionCSRF;
+
 class View {
-
-    /**
-     * 
-     * Variavel responsável por guardar o local dos templates
-     * 
-     * @var string $template_dir
-     */
-
-     private static $template_dir;
 
     /**
      * 
@@ -22,15 +15,6 @@ class View {
 
      private static $vars = [];
 
-     /**
-     * 
-     * Variavel responsável por guardar a instancia de twig
-     * 
-     * @var \Twig\Environment $twig
-     */
-
-     private static $twig;
-
     /**
      * 
      * Método responsável por definir os dados iniciais da classe
@@ -38,8 +22,7 @@ class View {
      * @param array $vars
      */
 
-    public static function init($template_dir, $vars = []) {
-        self::$template_dir = $template_dir;
+    public static function init($vars = []) {
         self::$vars = $vars;
     }
 
@@ -52,19 +35,17 @@ class View {
      */
 
      public static function getContentView($view){
-        $loader = new \Twig\Loader\FilesystemLoader(self::$template_dir);
-        self::$twig = new \Twig\Environment($loader);
-        return self::$twig->load($view);
+        return TwigSingleton::getInstance()->getTwig()->load($view);
      }
 
     public static function render($view, $vars = []){
-        
         // Conteúdo da view
         $contentView = self::getContentView($view);
 
         // Unir as variaveis da classe com dos controladores
         $vars = array_merge(self::$vars, $vars);
 
+        // Twig render
         $content = $contentView->render($vars);
 
         // Retorna conteúdo renderizado

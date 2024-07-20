@@ -16,7 +16,7 @@ $obRouter->get('/', [
 
 $obRouter->get('/depoimentos', [
     'middlewares' => [
-        'cache'
+        // 'cache'
     ],
     function($request){
         return new Response(200, Pages\Testimony::getTestimonies($request));

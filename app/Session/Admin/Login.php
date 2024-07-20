@@ -2,7 +2,8 @@
 
 namespace App\Session\Admin;
 
-class Login {
+class Login
+{
 
     /**
      * 
@@ -10,9 +11,10 @@ class Login {
      * 
      */
 
-    private static function init(){
+    private static function init()
+    {
         // Verifica se a sessao nao esta ativa
-        if(session_status() != PHP_SESSION_ACTIVE){
+        if (session_status() != PHP_SESSION_ACTIVE) {
             session_start();
         }
     }
@@ -25,7 +27,8 @@ class Login {
      * 
      */
 
-     public static function login($obUsuario){
+    public static function login($obUsuario)
+    {
 
         // Inicia a sessao
         self::init();
@@ -38,23 +41,23 @@ class Login {
         // sucesso
 
         return true;
+    }
 
-     }
-
-     /**
+    /**
      * 
      * Metodo responsavel por verificar se o usuario esta logado
      * @return boolean
      * 
      */
 
-     public static function isLogged(){
+    public static function isLogged()
+    {
         // Inicia a sessao
         self::init();
 
         // retorna a verificacao
         return isset($_SESSION['admin']['usuario']['id']);
-     }
+    }
 
     /**
      * 
@@ -63,14 +66,17 @@ class Login {
      * 
      */
 
-    public static function logout(){
+    public static function logout()
+    {
         // Inicia a sessao
         self::init();
+
+        // Destroi a sessão
 
         // retorna a verificacao
         unset($_SESSION['admin']['usuario']);
 
         // sucesso
         return true;
-     }
+    }
 }

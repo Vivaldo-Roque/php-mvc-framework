@@ -6,13 +6,14 @@ namespace App\Utils;
 class Debug
 {
 
-    public static function print($variable, $return = false)
+    public static function print($variable, $exit = true)
     {
 
-        $res = "<pre>" . print_r($variable, return: true) . "</pre>";
+        $res = "<pre>" . print_r($variable) . "</pre>";
 
-        if ($return) {
-            return $res;
+        if (!$exit) {
+            echo $res;
+            return;
         }
 
         echo $res;

@@ -4,8 +4,9 @@ namespace App\Controller\Pages;
 
 use App\Model\Entity\Testimony as EntityTestimony;
 use \App\Utils\Db_Mngr\Pagination;
-use App\Utils\Debug;
+use \App\Session\Security\CSRF as SessionCSRF;
 
+// Extende Page para usar getpage e gerar uma redundancia.
 class Testimony extends Page
 {
 
@@ -42,13 +43,11 @@ class Testimony extends Page
 
       foreach ($results as $obTestimony) {
 
-         $itens [] = $obTestimony->toArray();
+         $itens[] = $obTestimony->toArray();
       }
 
       return $itens;
    }
-
-   // Extende Page para usar getpage e gerar uma redundancia.
 
    /**
     * 
@@ -73,6 +72,14 @@ class Testimony extends Page
       $postVars = $request->getPostVars();
 
       if (isset($postVars['enviar'])) {
+
+         // CSRF
+         $token = isset($postVars['csrf_token']) ? $postVars['csrf_token'] : '';
+
+         if (!SessionCSRF::validateToken(form_token: $token)) {
+            die('Token CSRF inválido.');
+         }
+
          $obTestimony = new EntityTestimony(
             nome: $postVars['nome'],
             mensagem: $postVars['mensagem']
@@ -81,6 +88,6 @@ class Testimony extends Page
          $obTestimony->cadastrar();
       }
 
-      return self::getTestimonies($request);
+      $request->getRouter()->redirect('/depoimentos');
    }
 }
